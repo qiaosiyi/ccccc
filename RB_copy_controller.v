@@ -32,10 +32,10 @@ module RB_copy_controller (
                    READ_BRAM_SRC   = 3'b001,
                    READ_BRAM_SRC1   = 3'b010,
                    GET_SRC_and_READ_BRAM_DST   = 3'b011,
-				   GET_SRC1   = 3'b100,
-				   GET_DST   = 3'b101,
-				   GENOUTPUT   = 3'b110,
-				   STATE7   = 3'b111;
+		GET_SRC1   = 3'b100,
+		GET_DST   = 3'b101,
+		GENOUTPUT   = 3'b110,
+		STATE7   = 3'b111;
 
 
 
@@ -71,34 +71,34 @@ module RB_copy_controller (
                         copy_BRAM_addr_reg <= copy_BRAM_addr;
                         copy_offset_reg <= copy_offset;
                         copy_length_reg <= copy_length;
-						past_BRAM_addr_reg <= past_BRAM_addr;
-						past_offset_reg <= past_offset;
-						past_length_reg <= past_length;
+			past_BRAM_addr_reg <= past_BRAM_addr;
+			past_offset_reg <= past_offset;
+			past_length_reg <= past_length;
 
                         current_state <= READ_BRAM_SRC;
                     end
                 end
 
                 READ_BRAM_SRC: begin
-                    BRAM_read_addr <= copy_BRAM_addr_reg;
-					MASK <= MASK << (past_offset_reg*8);
+                                         BRAM_read_addr <= copy_BRAM_addr_reg;
+		                         MASK <= MASK << (past_offset_reg*8);
 
-					current_state <= READ_BRAM_SRC1;
+		                         current_state <= READ_BRAM_SRC1;
                 end
 
                 READ_BRAM_SRC1: begin
-                    BRAM_read_addr <= copy_BRAM_addr_reg + 16'b1;
-					MASK <= MASK >> (258*8*2 - copy_length_reg*8);
+                                        BRAM_read_addr <= copy_BRAM_addr_reg + 16'b1;
+		                        MASK <= MASK >> (258*8*2 - copy_length_reg*8);
 
-					current_state <= GET_SRC_and_READ_BRAM_DST;
+		                        current_state <= GET_SRC_and_READ_BRAM_DST;
                 end
 
                 GET_SRC_and_READ_BRAM_DST: begin
-                    BRAM_read_addr <= dst_BRAM_addr_reg;
-					temp_src_block <= {BRAM_read_data,258*8'h0}
-					MASK <= MASK << (258*8*2 - copy_length_reg*8 - dst_offset_reg*8);
+                                        BRAM_read_addr <= dst_BRAM_addr_reg;
+		                        temp_src_block <= {BRAM_read_data,258*8'h0}
+		                        MASK <= MASK << (258*8*2 - copy_length_reg*8 - dst_offset_reg*8);
 
-					current_state <= GET_SRC1;
+		                        current_state <= GET_SRC1;
                 end
 
                 GET_SRC1: begin
@@ -114,7 +114,7 @@ module RB_copy_controller (
                 end
 
                 GENOUTPUT: begin
-                    temp_dst_block <= (temp_dst_block & ~MASK) | temp_src_block;
+                                        temp_dst_block <= (temp_dst_block & ~MASK) | temp_src_block;
 
 
 					if(copy_en) begin
