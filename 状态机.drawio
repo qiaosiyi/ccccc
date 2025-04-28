@@ -179,45 +179,45 @@
           <mxGeometry x="40" y="1780" width="320" height="120" as="geometry" />
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-107" value="BRAM&lt;div&gt;258B x 256深度&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b0e3e6;strokeColor=#0e8088;" vertex="1" parent="1">
-          <mxGeometry x="635" y="1780" width="120" height="80" as="geometry" />
+          <mxGeometry x="635" y="1701" width="75" height="80" as="geometry" />
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-108" value="控制器 （状态机）" style="shape=tape;whiteSpace=wrap;html=1;fillColor=light-dark(#6D8764,#475542);fontColor=light-dark(#FFFFFF,#E9E9E9);strokeColor=light-dark(#3A5431,#040504);" vertex="1" parent="1">
-          <mxGeometry x="425" y="1780" width="130" height="80" as="geometry" />
+          <mxGeometry x="425" y="1701" width="130" height="80" as="geometry" />
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-109" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;fillColor=#9CC290;strokeColor=#3A5431;" edge="1" parent="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="645" y="1870" as="sourcePoint" />
-            <mxPoint x="645" y="1950" as="targetPoint" />
+            <mxPoint x="645" y="1791" as="sourcePoint" />
+            <mxPoint x="645" y="1871" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-110" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;fillColor=#9CC290;strokeColor=#3A5431;" edge="1" parent="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="745" y="1950" as="sourcePoint" />
-            <mxPoint x="745" y="1870" as="targetPoint" />
+            <mxPoint x="745" y="1871" as="sourcePoint" />
+            <mxPoint x="745" y="1791" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-111" value="temp src block" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fa6800;strokeColor=#C73500;fontColor=light-dark(#000000,#010101);" vertex="1" parent="1">
-          <mxGeometry x="575" y="1960" width="100" height="20" as="geometry" />
+          <mxGeometry x="575" y="1881" width="100" height="20" as="geometry" />
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-112" value="temp dst block" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#60a917;strokeColor=#2D7600;fontColor=#ffffff;" vertex="1" parent="1">
-          <mxGeometry x="695" y="1960" width="100" height="20" as="geometry" />
+          <mxGeometry x="695" y="1881" width="100" height="20" as="geometry" />
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-113" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="FYiVNXrTDByQqckiucjM-107">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="555" y="1820" as="sourcePoint" />
-            <mxPoint x="605" y="1770" as="targetPoint" />
+            <mxPoint x="555" y="1741" as="sourcePoint" />
+            <mxPoint x="605" y="1691" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-114" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" target="FYiVNXrTDByQqckiucjM-112">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="555" y="1840" as="sourcePoint" />
-            <mxPoint x="635" y="1840" as="targetPoint" />
+            <mxPoint x="555" y="1761" as="sourcePoint" />
+            <mxPoint x="635" y="1761" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-115" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0;entryDx=0;entryDy=0;exitX=0.477;exitY=0.863;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="FYiVNXrTDByQqckiucjM-108" target="FYiVNXrTDByQqckiucjM-111">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="565" y="1850" as="sourcePoint" />
-            <mxPoint x="730" y="1970" as="targetPoint" />
+            <mxPoint x="565" y="1771" as="sourcePoint" />
+            <mxPoint x="730" y="1891" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-116" value="temp 寄存器应该设置多大？" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=23;" vertex="1" parent="1">
@@ -235,22 +235,19 @@
             <mxPoint x="300" y="1535" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="FYiVNXrTDByQqckiucjM-119" value="1. 读BRAM src" style="rounded=0;whiteSpace=wrap;html=1;align=left;fontSize=20;" vertex="1" parent="1">
+        <mxCell id="FYiVNXrTDByQqckiucjM-119" value="&lt;strike&gt;1. 读BRAM src 0 + 1&lt;/strike&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;fontSize=20;" vertex="1" parent="1">
           <mxGeometry x="41" y="1960" width="230" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="FYiVNXrTDByQqckiucjM-120" value="2. 读BRAM src + 1" style="rounded=0;whiteSpace=wrap;html=1;align=left;fontSize=20;" vertex="1" parent="1">
+        <mxCell id="FYiVNXrTDByQqckiucjM-120" value="&lt;strike&gt;2. 等待&lt;/strike&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;fontSize=20;" vertex="1" parent="1">
           <mxGeometry x="41" y="2000" width="230" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="FYiVNXrTDByQqckiucjM-121" value="3. 读BRAM dst" style="rounded=0;whiteSpace=wrap;html=1;align=left;fontSize=20;" vertex="1" parent="1">
+        <mxCell id="FYiVNXrTDByQqckiucjM-121" value="1. 收BRAM src 0 + 1" style="rounded=0;whiteSpace=wrap;html=1;align=left;fontSize=20;" vertex="1" parent="1">
           <mxGeometry x="41" y="2040" width="230" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="FYiVNXrTDByQqckiucjM-123" value="3. 收BRAM src" style="rounded=0;whiteSpace=wrap;html=1;align=left;fontSize=20;" vertex="1" parent="1">
-          <mxGeometry x="271" y="2040" width="230" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="FYiVNXrTDByQqckiucjM-124" value="4. 收BRAM src + 1" style="rounded=0;whiteSpace=wrap;html=1;align=left;fontSize=20;" vertex="1" parent="1">
+        <mxCell id="FYiVNXrTDByQqckiucjM-124" value="2. 计算中间结果" style="rounded=0;whiteSpace=wrap;html=1;align=left;fontSize=20;" vertex="1" parent="1">
           <mxGeometry x="41" y="2080" width="230" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="FYiVNXrTDByQqckiucjM-125" value="5. 收BRAM dst" style="rounded=0;whiteSpace=wrap;html=1;align=left;fontSize=20;" vertex="1" parent="1">
+        <mxCell id="FYiVNXrTDByQqckiucjM-125" value="3.&amp;nbsp; 计算中间结果" style="rounded=0;whiteSpace=wrap;html=1;align=left;fontSize=20;" vertex="1" parent="1">
           <mxGeometry x="41" y="2120" width="230" height="40" as="geometry" />
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-126" value="258Bytes 宽度" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" vertex="1" parent="1">
@@ -313,53 +310,59 @@
         <mxCell id="FYiVNXrTDByQqckiucjM-148" value="dst block" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=21;" vertex="1" parent="1">
           <mxGeometry x="620" y="735" width="120" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="FYiVNXrTDByQqckiucjM-149" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;fillColor=#f0a30a;strokeColor=#BD7000;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="FYiVNXrTDByQqckiucjM-124">
+        <mxCell id="FYiVNXrTDByQqckiucjM-149" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;fillColor=#f0a30a;strokeColor=#BD7000;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="430" y="2100" as="sourcePoint" />
-            <mxPoint x="280" y="2110" as="targetPoint" />
+            <mxPoint x="430" y="2059" as="sourcePoint" />
+            <mxPoint x="271.0000000000002" y="2059" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-150" value="到这步，src block收集齐全&lt;div&gt;可以开始变换scr block&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="420" y="2090" width="185" height="30" as="geometry" />
+          <mxGeometry x="420" y="2043" width="185" height="30" as="geometry" />
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-151" value="准备mask" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="310" y="1960" width="120" height="40" as="geometry" />
+          <mxGeometry x="300" y="2030" width="120" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="FYiVNXrTDByQqckiucjM-152" value="6. 计算最终结果" style="rounded=0;whiteSpace=wrap;html=1;align=left;fontSize=20;" vertex="1" parent="1">
+        <mxCell id="FYiVNXrTDByQqckiucjM-152" value="4. copy完成" style="rounded=0;whiteSpace=wrap;html=1;align=left;fontSize=20;fontColor=#FF3333;" vertex="1" parent="1">
           <mxGeometry x="41" y="2160" width="230" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="FYiVNXrTDByQqckiucjM-153" value="7. 计算最终结果，并写回BRAM" style="rounded=0;whiteSpace=wrap;html=1;align=left;fontSize=20;" vertex="1" parent="1">
-          <mxGeometry x="41" y="2200" width="230" height="50" as="geometry" />
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-154" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;fillColor=#f0a30a;strokeColor=#BD7000;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="570" y="2140" as="sourcePoint" />
-            <mxPoint x="271" y="2140" as="targetPoint" />
+            <mxPoint x="570" y="2060" as="sourcePoint" />
+            <mxPoint x="271" y="2060" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-155" value="到这步，dst block收集齐全&lt;div&gt;可以开始变换dst block&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="575" y="2125" width="185" height="30" as="geometry" />
+          <mxGeometry x="582" y="2043" width="185" height="30" as="geometry" />
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-156" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#BD7000;" vertex="1" parent="1">
-          <mxGeometry x="420" y="2100" width="10" height="130" as="geometry" />
+          <mxGeometry x="420" y="2054" width="10" height="126" as="geometry" />
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-157" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f0a30a;fontColor=#000000;strokeColor=#BD7000;" vertex="1" parent="1">
-          <mxGeometry x="560" y="2140" width="10" height="90" as="geometry" />
-        </mxCell>
-        <mxCell id="FYiVNXrTDByQqckiucjM-158" value="" style="endArrow=none;dashed=1;html=1;rounded=0;" edge="1" parent="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="280" y="2230" as="sourcePoint" />
-            <mxPoint x="650" y="2230" as="targetPoint" />
-          </mxGeometry>
+          <mxGeometry x="560" y="2070" width="10" height="110" as="geometry" />
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-159" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;flipH=1;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;" vertex="1" parent="1">
-          <mxGeometry x="760" y="2080" width="20" height="140" as="geometry" />
+          <mxGeometry x="760" y="2000" width="20" height="200" as="geometry" />
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-160" value="把14级逻辑可以分散在2轮里面做完，如果时序富裕可以删除第六步。如果时序紧张，可以再增加一轮第六步。&lt;font style=&quot;color: rgb(255, 0, 0);&quot;&gt;留有灵活余地。&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="780" y="2065" width="60" height="200" as="geometry" />
+          <mxGeometry x="780" y="2010" width="60" height="200" as="geometry" />
         </mxCell>
         <mxCell id="FYiVNXrTDByQqckiucjM-161" value="时序逻辑电路，用&amp;lt;=这种非阻塞赋值，代码过程每一句都是并行的。&lt;div&gt;&lt;br&gt;&lt;div&gt;&lt;br&gt;&lt;div&gt;组合逻辑电路，用=这种阻塞赋值，代码过程每一句都是串行的。&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=17;fillColor=#e3c800;fontColor=#000000;strokeColor=#B09500;" vertex="1" parent="1">
           <mxGeometry x="40" y="2330" width="270" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="FYiVNXrTDByQqckiucjM-162" value="BRAM&lt;div&gt;258B x 256深度&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b0e3e6;strokeColor=#0e8088;" vertex="1" parent="1">
+          <mxGeometry x="720" y="1701" width="75" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="FYiVNXrTDByQqckiucjM-163" value="" style="endArrow=none;dashed=1;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="281.5" y="2139.41" as="sourcePoint" />
+            <mxPoint x="651.5" y="2139.41" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="FYiVNXrTDByQqckiucjM-164" value="" style="endArrow=none;dashed=1;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="280" y="2179.41" as="sourcePoint" />
+            <mxPoint x="650" y="2179.41" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
