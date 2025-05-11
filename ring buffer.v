@@ -106,7 +106,73 @@ reg [15:0] dst_move_state_2;
 // window size: 1024, length: 16
 // BRAMs for literals: 2 x (width: 16*7, depth: 32), dual port
 // BRAMs for states: 2 x (width: 16 * STATEWIDTH, depth: 32), dual port
+bram_dual_port #(
+    .DATA_WIDTH(UNIT_PER_LINE * 7),
+    .ADDR_WIDTH(BRAM_ADDR_WIDTH)
+) literals_bram0 (
+    .clk(sys_clk),
+    .en_a(scanning_enable_bram0),
+    .en_b(verification_enable_bram0),
+    .we_a(scanning_write_bram0),
+    .we_b(verification_write_bram0),
+    .addr_a(scanning_addr0),
+    .addr_b(verification_addr0),
+    .din_a(scanning_literals_to_bram0),
+    .din_b(verification_literals_to_bram0),
+    .dout_a(scanning_literals_from_bram0),
+    .dout_b(verification_literals_from_bram0)
+);
 
+bram_dual_port #(
+    .DATA_WIDTH(UNIT_PER_LINE * 7),
+    .ADDR_WIDTH(BRAM_ADDR_WIDTH)
+) literals_bram1 (
+    .clk(sys_clk),
+    .en_a(scanning_enable_bram1),
+    .en_b(verification_enable_bram1),
+    .we_a(scanning_write_bram1),
+    .we_b(verification_write_bram1),
+    .addr_a(scanning_addr1),
+    .addr_b(verification_addr1),
+    .din_a(scanning_literals_to_bram1),
+    .din_b(verification_literals_to_bram1),
+    .dout_a(scanning_literals_from_bram1),
+    .dout_b(verification_literals_from_bram1)
+);
+
+bram_dual_port #(
+    .DATA_WIDTH(UNIT_PER_LINE * STATEWIDTH),
+    .ADDR_WIDTH(BRAM_ADDR_WIDTH)
+) states_bram0 (
+    .clk(sys_clk),
+    .en_a(scanning_enable_bram0),
+    .en_b(verification_enable_bram0),
+    .we_a(scanning_write_bram0),
+    .we_b(verification_write_bram0),
+    .addr_a(scanning_addr0),
+    .addr_b(verification_addr0),
+    .din_a(scanning_states_to_bram0),
+    .din_b(verification_states_to_bram0),
+    .dout_a(scanning_states_from_bram0),
+    .dout_b(verification_states_from_bram0)
+);
+
+bram_dual_port #(
+    .DATA_WIDTH(UNIT_PER_LINE * STATEWIDTH),
+    .ADDR_WIDTH(BRAM_ADDR_WIDTH)
+) states_bram1 (
+    .clk(sys_clk),
+    .en_a(scanning_enable_bram1),
+    .en_b(verification_enable_bram1),
+    .we_a(scanning_write_bram1),
+    .we_b(verification_write_bram1),
+    .addr_a(scanning_addr1),
+    .addr_b(verification_addr1),
+    .din_a(scanning_states_to_bram1),
+    .din_b(verification_states_to_bram1),
+    .dout_a(scanning_states_from_bram1),
+    .dout_b(verification_states_from_bram1)
+);
 
 always@(posedge sys_clk or negedge sys_rst_n) begin
     if(!sys_rst_n) begin
@@ -116,6 +182,22 @@ always@(posedge sys_clk or negedge sys_rst_n) begin
         scanning_enable_bram1 <= 0;
         verification_enable_bram0 <= 0;
         verification_enable_bram1 <= 0;
+        scanning_write_bram0 <= 0;
+        scanning_write_bram1 <= 0;
+        verification_write_bram0 <= 0;
+        verification_write_bram1 <= 0;
+        scanning_addr0 <= 0;
+        scanning_addr1 <= 0;
+        verification_addr0 <= 0;
+        verification_addr1 <= 0;
+        scanning_literals_to_bram0 <= 0;
+        scanning_literals_to_bram1 <= 0;
+        scanning_states_to_bram0 <= 0;
+        scanning_states_to_bram1 <= 0;
+        verification_literals_to_bram0 <= 0;
+        verification_literals_to_bram1 <= 0;
+        verification_states_to_bram0 <= 0;
+        verification_states_to_bram1 <= 0;
         scanning_cache_index <= 0;
         verification_cache_index <= 0;
         write_single_step <= 0;
@@ -123,239 +205,269 @@ always@(posedge sys_clk or negedge sys_rst_n) begin
         pre_verification_cache_index <= 0;
         verification_read_step <= 0;
         verification_write_single_step <= 0; 
+        states_to_verification <= 0;
+        literals_to_verification <= 0;
+        scanning_literals_block <= 0;
+        scanning_states_block <= 0;
+        verification_literals_block <= 0;
+        verification_states_block <= 0;
+        scanning_cache_literals <= 0;
+        scanning_cache_states <= 0;
+        verification_cache_states <= 0;
+        state_src_mask <= 0;
+        state_dst_mask_1 <= 0;
+        state_dst_mask_2 <= 0;
+        literal_src_mask <= 0;
+        literal_dst_mask_1 <= 0;
+        literal_dst_mask_2 <= 0;
+        temp_literal_cache <= 0;
+        temp_state_cache <= 0;
+        src_move_literal <= 0;
+        src_move_state <= 0;
+        dst_move_literal_1 <= 0;
+        dst_move_literal_2 <= 0;
+        dst_move_state_1 <= 0;
+        dst_move_state_2 <= 0;
+        state_to_scanning <= 0;
     end
     else begin
-        // if(enable_from_scanning) begin
-        //     // handle scanning module's request
-        //     if(opcode_from_scanning == 1'b0) begin
-        //         case(write_single_step)
-        //             1'b0: begin
-        //                 // write cache
-        //                 scanning_enable_bram0 <= 0;
-        //                 scanning_enable_bram1 <= 0;
-        //                 verification_enable_bram0 <= 0;
-        //                 verification_enable_bram1 <= 0;
-        //                 pre_scanning_cache_index <= scanning_cache_index;
-        //                 scanning_cache_index <= scanning_cache_index + 1;
-        //                 scanning_cache_literals[((scanning_cache_index % (2*UNIT_PER_LINE)) + 1) * 7 - 1 -: 7] <= literal_from_scanning;
-        //                 scanning_cache_states[((scanning_cache_index % (2*UNIT_PER_LINE)) + 1) * STATEWIDTH - 1 -: STATEWIDTH] <= state_from_scanning;
-        //                 write_single_step <= 1;
-        //             end
-        //             1'b1: begin
-        //                 // one of the cache blocks is full, flush it to bram
-        //                 if(pre_scanning_cache_index[4:0] == 15) begin // depends on UNIT_PER_LINE
-        //                     if(addr_from_scanning[4] == 0) begin
-        //                         // flush to bram0
-        //                         scanning_enable_bram0 <= 1;
-        //                         scanning_write_bram0 <= 1;
-        //                         scanning_addr0 <= addr_from_scanning[ADDR_WIDTH -1 -: BRAM_ADDR_WIDTH];
-        //                         scanning_literals_to_bram0 <= scanning_cache_literals[UNIT_PER_LINE*7-1:0];
-        //                         scanning_states_to_bram0 <= scanning_cache_states[UNIT_PER_LINE*STATEWIDTH-1:0];
-        //                     end
-        //                     else begin
-        //                         // flush to bram1                            
-        //                         scanning_enable_bram1 <= 1;
-        //                         scanning_write_bram1 <= 1;
-        //                         scanning_addr1 <= addr_from_scanning[ADDR_WIDTH -1 -: BRAM_ADDR_WIDTH];
-        //                         scanning_literals_to_bram1 <= scanning_cache_literals[UNIT_PER_LINE*7-1:0];
-        //                         scanning_states_to_bram1 <= scanning_cache_states[UNIT_PER_LINE*STATEWIDTH-1:0];
-        //                     end
-        //                 end
-        //                 if(pre_scanning_cache_index[4:0] == 31) begin
-        //                     if(addr_from_scanning[4] == 0) begin
-        //                         // flush to bram0
-        //                         scanning_enable_bram0 <= 1;
-        //                         scanning_write_bram0 <= 1;
-        //                         scanning_addr0 <= addr_from_scanning[ADDR_WIDTH-1 -: BRAM_ADDR_WIDTH];
-        //                         scanning_literals_to_bram0 <= scanning_cache_literals[2*UNIT_PER_LINE*7-1:UNIT_PER_LINE*7];
-        //                         scanning_states_to_bram0 <= scanning_cache_states[2*UNIT_PER_LINE*STATEWIDTH-1:UNIT_PER_LINE*STATEWIDTH];
-        //                     end
-        //                     else begin
-        //                         // flush to bram1                            
-        //                         scanning_enable_bram1 <= 1;
-        //                         scanning_write_bram1 <= 1;
-        //                         scanning_addr1 <= addr_from_scanning[ADDR_WIDTH-1 -: BRAM_ADDR_WIDTH];
-        //                         scanning_literals_to_bram1 <= scanning_cache_literals[2*UNIT_PER_LINE*7-1:UNIT_PER_LINE*7];
-        //                         scanning_states_to_bram1 <= scanning_cache_states[2*UNIT_PER_LINE*STATEWIDTH-1:UNIT_PER_LINE*STATEWIDTH];
-        //                     end
-        //                 end
-        //                 write_single_step <= 0;
-        //             end
-        //         endcase
-        //     end
-        //     else begin
-        //         // append referred string and its states to cache, cache[cache_index +: len] <= block[addr +: len]
-        //         case(append_step)
-        //             3'd0: begin
-        //                 // compute bram address
-        //                 scanning_enable_bram0 <= 1'b1;
-        //                 scanning_enable_bram1 <= 1'b1;
-        //                 scanning_write_bram0 <= 1'b0;
-        //                 scanning_write_bram1 <= 1'b0;
-        //                 // addr_from_scanning / UNIT_PER_LINE % 2
-        //                 if(addr_from_scanning[4] == 0) begin
-        //                     scanning_addr0 <= addr_from_scanning[ADDR_WIDTH-1 -: BRAM_ADDR_WIDTH];
-        //                     scanning_addr1 <= addr_from_scanning[ADDR_WIDTH-1  -: BRAM_ADDR_WIDTH];
-        //                 end
-        //                 else begin
-        //                     scanning_addr0 <= addr_from_scanning[ADDR_WIDTH -1 -: BRAM_ADDR_WIDTH] + 1;
-        //                     scanning_addr1 <= addr_from_scanning[ADDR_WIDTH -1 -: BRAM_ADDR_WIDTH];
-        //                 end
-        //                 // start to prepare mask
-        //                 src_move_literal <= (2*UNIT_PER_LINE - length_from_scanning) * 7;
-        //                 src_move_state <= (2*UNIT_PER_LINE - length_from_scanning) * STATEWIDTH;
-        //                 dst_move_literal_1 <= (length_from_scanning + (scanning_cache_index % (2*UNIT_PER_LINE))) * 7;
-        //                 dst_move_literal_2 <= (2*UNIT_PER_LINE - (scanning_cache_index % (2*UNIT_PER_LINE))) * 7;
-        //                 dst_move_state_1 <= (length_from_scanning + (scanning_cache_index % (2*UNIT_PER_LINE))) * STATEWIDTH;
-        //                 dst_move_state_2 <= (2*UNIT_PER_LINE - scanning_cache_index % (2*UNIT_PER_LINE)) * STATEWIDTH; 
-        //                 append_step <= 3'd1;
-        //             end
-        //             3'd1: begin
-        //                 // bram returned data, combine block
-        //                 if(scanning_cache_index / UNIT_PER_LINE == addr_from_scanning / UNIT_PER_LINE) begin
-        //                     // first blcok hits cache
-        //                     if(addr_from_scanning[4] == 0) begin
-        //                         if(scanning_cache_index % (2*UNIT_PER_LINE) <= 15) begin
-        //                             // block = {_from_bram1, cache[UNIT_PER_LINE*7-1:0]}
-        //                             scanning_literals_block <= {scanning_literals_from_bram1, scanning_cache_literals[UNIT_PER_LINE*7-1:0]};
-        //                             scanning_states_block <= {scanning_states_from_bram1, scanning_cache_states[UNIT_PER_LINE*STATEWIDTH-1:0]};
-        //                         end
-        //                         else begin
-        //                             scanning_literals_block <= {scanning_literals_from_bram1, scanning_cache_literals[2*UNIT_PER_LINE*7-1:UNIT_PER_LINE*7]};
-        //                             scanning_states_block <= {scanning_states_from_bram1, scanning_cache_states[2*UNIT_PER_LINE*STATEWIDTH-1:UNIT_PER_LINE*STATEWIDTH]};
-        //                         end
-        //                     end
-        //                     else begin
-        //                         // block = {_from_block0, cache[]}
-        //                         if(scanning_cache_index % (2*UNIT_PER_LINE) <= 15) begin
-        //                             scanning_literals_block <= {scanning_literals_from_bram0, scanning_cache_literals[UNIT_PER_LINE*7-1:0]};
-        //                             scanning_states_block <= {scanning_states_from_bram0, scanning_cache_states[UNIT_PER_LINE*STATEWIDTH-1:0]};
-        //                         end
-        //                         else begin
-        //                             scanning_literals_block <= {scanning_literals_from_bram0, scanning_cache_literals[2*UNIT_PER_LINE*7-1:UNIT_PER_LINE*7]};
-        //                             scanning_states_block <= {scanning_states_from_bram0, scanning_cache_states[2*UNIT_PER_LINE*STATEWIDTH-1:UNIT_PER_LINE*STATEWIDTH]};
-        //                         end                               
-        //                     end
-        //                 end
-        //                 else if(scanning_cache_index / UNIT_PER_LINE == addr_from_scanning / UNIT_PER_LINE + 1) begin
-        //                     // second block hits cache, block = {cache[] , from_bram}
-        //                     if(addr_from_scanning[4] == 0) begin
-        //                         if(scanning_cache_index % (2*UNIT_PER_LINE) <= 15) begin
-        //                             scanning_literals_block <= {scanning_cache_literals[UNIT_PER_LINE*7-1:0], scanning_literals_from_bram0};
-        //                             scanning_states_block <= {scanning_cache_states[UNIT_PER_LINE*STATEWIDTH-1:0], scanning_states_from_bram0};
-        //                         end
-        //                         else begin
-        //                             scanning_literals_block <= {scanning_cache_literals[2*UNIT_PER_LINE*7-1:UNIT_PER_LINE*7], scanning_literals_from_bram0};
-        //                             scanning_states_block <= {scanning_cache_states[2*UNIT_PER_LINE*STATEWIDTH-1:UNIT_PER_LINE*STATEWIDTH], scanning_states_from_bram0};
-        //                         end
-        //                     end
-        //                     else begin
-        //                         if(scanning_cache_index % (2*UNIT_PER_LINE) <= 15) begin
-        //                             scanning_literals_block <= {scanning_cache_literals[UNIT_PER_LINE*7-1:0], scanning_literals_from_bram1};
-        //                             scanning_states_block <= {scanning_cache_states[UNIT_PER_LINE*STATEWIDTH-1:0], scanning_states_from_bram1};
-        //                         end
-        //                         else begin
-        //                             scanning_literals_block <= {scanning_cache_literals[2*UNIT_PER_LINE*7-1:UNIT_PER_LINE*7], scanning_literals_from_bram1};
-        //                             scanning_states_block <= {scanning_cache_states[2*UNIT_PER_LINE*STATEWIDTH-1:UNIT_PER_LINE*STATEWIDTH], scanning_states_from_bram1};
-        //                         end                              
-        //                     end
-        //                 end
-        //                 else begin
-        //                     // cache missed 
-        //                     if(addr_from_scanning[4] == 0) begin
-        //                         scanning_literals_block <= {scanning_literals_from_bram1, scanning_literals_from_bram0};
-        //                         scanning_states_block <= {scanning_states_from_bram1, scanning_states_from_bram0};
-        //                     end
-        //                     else begin
-        //                         scanning_literals_block <= {scanning_literals_from_bram0, scanning_literals_from_bram1};
-        //                         scanning_states_block <= {scanning_states_from_bram0, scanning_states_from_bram1};
-        //                     end
-        //                 end
-        //                 // last state hits cache
-        //                 if(endaddr_from_scanning / UNIT_PER_LINE == scanning_cache_index / UNIT_PER_LINE) begin
-        //                     state_to_scanning <= scanning_cache_states[(endaddr_from_scanning % (2*UNIT_PER_LINE) + 1) * STATEWIDTH - 1 -: STATEWIDTH];
-        //                 end
-        //                 else begin
-        //                     if(endaddr_from_scanning[4] == 0) begin
-        //                         state_to_scanning <= scanning_states_from_bram0[(endaddr_from_scanning % UNIT_PER_LINE + 1) * STATEWIDTH - 1 -: STATEWIDTH];
-        //                     end
-        //                     else begin
-        //                         state_to_scanning <= scanning_states_from_bram1[(endaddr_from_scanning % UNIT_PER_LINE + 1) * STATEWIDTH - 1 -: STATEWIDTH];
-        //                     end
-        //                 end
+        if(enable_from_scanning) begin
+            // handle scanning module's request
+            if(opcode_from_scanning == 1'b0) begin
+                case(write_single_step)
+                    1'b0: begin
+                        // write cache
+                        scanning_enable_bram0 <= 0;
+                        scanning_enable_bram1 <= 0;
+                        verification_enable_bram0 <= 0;
+                        verification_enable_bram1 <= 0;
+                        pre_scanning_cache_index <= scanning_cache_index;
+                        scanning_cache_index <= scanning_cache_index + 1;
+                        scanning_cache_literals[((scanning_cache_index % (2*UNIT_PER_LINE)) + 1) * 7 - 1 -: 7] <= literal_from_scanning;
+                        scanning_cache_states[((scanning_cache_index % (2*UNIT_PER_LINE)) + 1) * STATEWIDTH - 1 -: STATEWIDTH] <= state_from_scanning;
+                        write_single_step <= 1;
+                    end
+                    1'b1: begin
+                        // one of the cache blocks is full, flush it to bram
+                        if(pre_scanning_cache_index[4:0] == 15) begin // depends on UNIT_PER_LINE
+                            if(addr_from_scanning[4] == 0) begin
+                                // flush to bram0
+                                scanning_enable_bram0 <= 1;
+                                scanning_write_bram0 <= 1;
+                                scanning_addr0 <= addr_from_scanning[ADDR_WIDTH -1 -: BRAM_ADDR_WIDTH];
+                                scanning_literals_to_bram0 <= scanning_cache_literals[UNIT_PER_LINE*7-1:0];
+                                scanning_states_to_bram0 <= scanning_cache_states[UNIT_PER_LINE*STATEWIDTH-1:0];
+                            end
+                            else begin
+                                // flush to bram1                            
+                                scanning_enable_bram1 <= 1;
+                                scanning_write_bram1 <= 1;
+                                scanning_addr1 <= addr_from_scanning[ADDR_WIDTH -1 -: BRAM_ADDR_WIDTH];
+                                scanning_literals_to_bram1 <= scanning_cache_literals[UNIT_PER_LINE*7-1:0];
+                                scanning_states_to_bram1 <= scanning_cache_states[UNIT_PER_LINE*STATEWIDTH-1:0];
+                            end
+                        end
+                        if(pre_scanning_cache_index[4:0] == 31) begin
+                            if(addr_from_scanning[4] == 0) begin
+                                // flush to bram0
+                                scanning_enable_bram0 <= 1;
+                                scanning_write_bram0 <= 1;
+                                scanning_addr0 <= addr_from_scanning[ADDR_WIDTH-1 -: BRAM_ADDR_WIDTH];
+                                scanning_literals_to_bram0 <= scanning_cache_literals[2*UNIT_PER_LINE*7-1:UNIT_PER_LINE*7];
+                                scanning_states_to_bram0 <= scanning_cache_states[2*UNIT_PER_LINE*STATEWIDTH-1:UNIT_PER_LINE*STATEWIDTH];
+                            end
+                            else begin
+                                // flush to bram1                            
+                                scanning_enable_bram1 <= 1;
+                                scanning_write_bram1 <= 1;
+                                scanning_addr1 <= addr_from_scanning[ADDR_WIDTH-1 -: BRAM_ADDR_WIDTH];
+                                scanning_literals_to_bram1 <= scanning_cache_literals[2*UNIT_PER_LINE*7-1:UNIT_PER_LINE*7];
+                                scanning_states_to_bram1 <= scanning_cache_states[2*UNIT_PER_LINE*STATEWIDTH-1:UNIT_PER_LINE*STATEWIDTH];
+                            end
+                        end
+                        write_single_step <= 0;
+                    end
+                    default: begin
+                        write_single_step <= 1'b0;
+                    end
+                endcase
+            end
+            else begin
+                // append referred string and its states to cache, cache[cache_index +: len] <= block[addr +: len]
+                case(append_step)
+                    3'd0: begin
+                        // compute bram address
+                        scanning_enable_bram0 <= 1'b1;
+                        scanning_enable_bram1 <= 1'b1;
+                        scanning_write_bram0 <= 1'b0;
+                        scanning_write_bram1 <= 1'b0;
+                        // addr_from_scanning / UNIT_PER_LINE % 2
+                        if(addr_from_scanning[4] == 0) begin
+                            scanning_addr0 <= addr_from_scanning[ADDR_WIDTH-1 -: BRAM_ADDR_WIDTH];
+                            scanning_addr1 <= addr_from_scanning[ADDR_WIDTH-1  -: BRAM_ADDR_WIDTH];
+                        end
+                        else begin
+                            scanning_addr0 <= addr_from_scanning[ADDR_WIDTH -1 -: BRAM_ADDR_WIDTH] + 1;
+                            scanning_addr1 <= addr_from_scanning[ADDR_WIDTH -1 -: BRAM_ADDR_WIDTH];
+                        end
+                        // start to prepare mask
+                        src_move_literal <= (2*UNIT_PER_LINE - length_from_scanning) * 7;
+                        src_move_state <= (2*UNIT_PER_LINE - length_from_scanning) * STATEWIDTH;
+                        dst_move_literal_1 <= (length_from_scanning + (scanning_cache_index % (2*UNIT_PER_LINE))) * 7;
+                        dst_move_literal_2 <= (2*UNIT_PER_LINE - (scanning_cache_index % (2*UNIT_PER_LINE))) * 7;
+                        dst_move_state_1 <= (length_from_scanning + (scanning_cache_index % (2*UNIT_PER_LINE))) * STATEWIDTH;
+                        dst_move_state_2 <= (2*UNIT_PER_LINE - scanning_cache_index % (2*UNIT_PER_LINE)) * STATEWIDTH; 
+                        append_step <= 3'd1;
+                    end
+                    3'd1: begin
+                        // bram returned data, combine block
+                        if(scanning_cache_index / UNIT_PER_LINE == addr_from_scanning / UNIT_PER_LINE) begin
+                            // first blcok hits cache
+                            if(addr_from_scanning[4] == 0) begin
+                                if(scanning_cache_index % (2*UNIT_PER_LINE) <= 15) begin
+                                    // block = {_from_bram1, cache[UNIT_PER_LINE*7-1:0]}
+                                    scanning_literals_block <= {scanning_literals_from_bram1, scanning_cache_literals[UNIT_PER_LINE*7-1:0]};
+                                    scanning_states_block <= {scanning_states_from_bram1, scanning_cache_states[UNIT_PER_LINE*STATEWIDTH-1:0]};
+                                end
+                                else begin
+                                    scanning_literals_block <= {scanning_literals_from_bram1, scanning_cache_literals[2*UNIT_PER_LINE*7-1:UNIT_PER_LINE*7]};
+                                    scanning_states_block <= {scanning_states_from_bram1, scanning_cache_states[2*UNIT_PER_LINE*STATEWIDTH-1:UNIT_PER_LINE*STATEWIDTH]};
+                                end
+                            end
+                            else begin
+                                // block = {_from_block0, cache[]}
+                                if(scanning_cache_index % (2*UNIT_PER_LINE) <= 15) begin
+                                    scanning_literals_block <= {scanning_literals_from_bram0, scanning_cache_literals[UNIT_PER_LINE*7-1:0]};
+                                    scanning_states_block <= {scanning_states_from_bram0, scanning_cache_states[UNIT_PER_LINE*STATEWIDTH-1:0]};
+                                end
+                                else begin
+                                    scanning_literals_block <= {scanning_literals_from_bram0, scanning_cache_literals[2*UNIT_PER_LINE*7-1:UNIT_PER_LINE*7]};
+                                    scanning_states_block <= {scanning_states_from_bram0, scanning_cache_states[2*UNIT_PER_LINE*STATEWIDTH-1:UNIT_PER_LINE*STATEWIDTH]};
+                                end                               
+                            end
+                        end
+                        else if(scanning_cache_index / UNIT_PER_LINE == addr_from_scanning / UNIT_PER_LINE + 1) begin
+                            // second block hits cache, block = {cache[] , from_bram}
+                            if(addr_from_scanning[4] == 0) begin
+                                if(scanning_cache_index % (2*UNIT_PER_LINE) <= 15) begin
+                                    scanning_literals_block <= {scanning_cache_literals[UNIT_PER_LINE*7-1:0], scanning_literals_from_bram0};
+                                    scanning_states_block <= {scanning_cache_states[UNIT_PER_LINE*STATEWIDTH-1:0], scanning_states_from_bram0};
+                                end
+                                else begin
+                                    scanning_literals_block <= {scanning_cache_literals[2*UNIT_PER_LINE*7-1:UNIT_PER_LINE*7], scanning_literals_from_bram0};
+                                    scanning_states_block <= {scanning_cache_states[2*UNIT_PER_LINE*STATEWIDTH-1:UNIT_PER_LINE*STATEWIDTH], scanning_states_from_bram0};
+                                end
+                            end
+                            else begin
+                                if(scanning_cache_index % (2*UNIT_PER_LINE) <= 15) begin
+                                    scanning_literals_block <= {scanning_cache_literals[UNIT_PER_LINE*7-1:0], scanning_literals_from_bram1};
+                                    scanning_states_block <= {scanning_cache_states[UNIT_PER_LINE*STATEWIDTH-1:0], scanning_states_from_bram1};
+                                end
+                                else begin
+                                    scanning_literals_block <= {scanning_cache_literals[2*UNIT_PER_LINE*7-1:UNIT_PER_LINE*7], scanning_literals_from_bram1};
+                                    scanning_states_block <= {scanning_cache_states[2*UNIT_PER_LINE*STATEWIDTH-1:UNIT_PER_LINE*STATEWIDTH], scanning_states_from_bram1};
+                                end                              
+                            end
+                        end
+                        else begin
+                            // cache missed 
+                            if(addr_from_scanning[4] == 0) begin
+                                scanning_literals_block <= {scanning_literals_from_bram1, scanning_literals_from_bram0};
+                                scanning_states_block <= {scanning_states_from_bram1, scanning_states_from_bram0};
+                            end
+                            else begin
+                                scanning_literals_block <= {scanning_literals_from_bram0, scanning_literals_from_bram1};
+                                scanning_states_block <= {scanning_states_from_bram0, scanning_states_from_bram1};
+                            end
+                        end
+                        // last state hits cache
+                        if(endaddr_from_scanning / UNIT_PER_LINE == scanning_cache_index / UNIT_PER_LINE) begin
+                            state_to_scanning <= scanning_cache_states[(endaddr_from_scanning % (2*UNIT_PER_LINE) + 1) * STATEWIDTH - 1 -: STATEWIDTH];
+                        end
+                        else begin
+                            if(endaddr_from_scanning[4] == 0) begin
+                                state_to_scanning <= scanning_states_from_bram0[(endaddr_from_scanning % UNIT_PER_LINE + 1) * STATEWIDTH - 1 -: STATEWIDTH];
+                            end
+                            else begin
+                                state_to_scanning <= scanning_states_from_bram1[(endaddr_from_scanning % UNIT_PER_LINE + 1) * STATEWIDTH - 1 -: STATEWIDTH];
+                            end
+                        end
 
-        //                 literal_src_mask <= {2*UNIT_PER_LINE*7{1'b1}} << src_move_literal;
-        //                 state_src_mask <= {2*UNIT_PER_LINE*STATEWIDTH{1'b1}} << src_move_state;
-        //                 literal_dst_mask_1 <= {2*UNIT_PER_LINE*7{1'b1}} << dst_move_literal_1;
-        //                 literal_dst_mask_2 <= {2*UNIT_PER_LINE*7{1'b1}} >> dst_move_literal_2;
-        //                 state_dst_mask_1 <= {2*UNIT_PER_LINE*STATEWIDTH{1'b1}} << dst_move_state_1;
-        //                 state_dst_mask_2 <= {2*UNIT_PER_LINE*STATEWIDTH{1'b1}} >> dst_move_state_2;
-        //                 append_step <= 3'd2;
-        //             end
-        //             3'd2: begin
-        //                 // 
-        //                 scanning_literals_block <= scanning_literals_block << src_move_literal;
-        //                 scanning_states_block <= scanning_states_block << src_move_state;
-        //                 state_dst_mask_1 <= state_dst_mask_1 | state_dst_mask_2;
-        //                 literal_dst_mask_1 <= literal_dst_mask_1 | literal_dst_mask_2;
-        //                 append_step <= 3'd3;
-        //             end
-        //             3'd3: begin
-        //                 scanning_literals_block <= scanning_literals_block & literal_src_mask;
-        //                 scanning_states_block <= scanning_states_block & state_src_mask;
-        //                 scanning_cache_states <= scanning_cache_states & state_dst_mask_1;
-        //                 scanning_cache_literals <= scanning_cache_literals & literal_dst_mask_2;
-        //                 append_step <= 3'd4;
-        //             end 
-        //             3'd4: begin
-        //                 src_move_literal <= (2*UNIT_PER_LINE - length_from_scanning - scanning_cache_index % (2*UNIT_PER_LINE)) * 7;
-        //                 src_move_state <= (2*UNIT_PER_LINE - length_from_scanning - scanning_cache_index % (2*UNIT_PER_LINE)) * STATEWIDTH;
-        //                 append_step <= 3'd5;
-        //             end
-        //             3'd5: begin
-        //                 scanning_literals_block <= scanning_literals_block >> src_move_literal;
-        //                 scanning_states_block <= scanning_states_block >> src_move_state;
-        //                 append_step <= 3'd6;
-        //             end
-        //             3'd6: begin
-        //                 scanning_cache_literals <= scanning_cache_literals | scanning_literals_block;
-        //                 scanning_cache_states <= scanning_cache_states | scanning_states_block;
-        //                 scanning_cache_index <= scanning_cache_index + length_from_scanning;
-        //                 pre_scanning_cache_index <= scanning_cache_index;
-        //                 append_step <= 3'd7;
-        //             end
-        //             3'd7: begin
-        //                 if(pre_scanning_cache_index / UNIT_PER_LINE != scanning_cache_index / UNIT_PER_LINE) begin
-        //                     if(pre_scanning_cache_index[4] == 0) begin
-        //                         scanning_enable_bram0 <= 1'b1;
-        //                         scanning_write_bram0 <= 1'b1;
-        //                         if(pre_scanning_cache_index % (2*UNIT_PER_LINE) <= 15) begin
-        //                             scanning_literals_to_bram0 <= scanning_cache_literals[UNIT_PER_LINE*7-1:0];
-        //                             scanning_states_to_bram0 <= scanning_cache_states[UNIT_PER_LINE*STATEWIDTH-1:0];   
-        //                         end
-        //                         else begin
-        //                             scanning_literals_to_bram0 <= scanning_cache_literals[2*UNIT_PER_LINE*7-1:UNIT_PER_LINE*7];
-        //                             scanning_states_to_bram0 <= scanning_cache_states[2*UNIT_PER_LINE*STATEWIDTH-1:UNIT_PER_LINE*STATEWIDTH];
-        //                         end
-        //                     end
-        //                     else begin
-        //                         scanning_enable_bram1 <= 1'b1;
-        //                         scanning_write_bram1 <= 1'b1;
-        //                         if(pre_scanning_cache_index % (2*UNIT_PER_LINE) <= UNIT_PER_LINE) begin
-        //                             scanning_literals_to_bram1 <= scanning_cache_literals[UNIT_PER_LINE*7-1:0];
-        //                             scanning_states_to_bram1 <= scanning_cache_states[UNIT_PER_LINE*STATEWIDTH-1:0];   
-        //                         end
-        //                         else begin
-        //                             scanning_literals_to_bram1 <= scanning_cache_literals[2*UNIT_PER_LINE*7-1:UNIT_PER_LINE*7];
-        //                             scanning_states_to_bram1 <= scanning_cache_states[2*UNIT_PER_LINE*STATEWIDTH-1:UNIT_PER_LINE*STATEWIDTH];                            
-        //                         end
-        //                     end
-        //                 end
-        //                 append_step <= 3'd0;
-        //             end
-        //         endcase
-        //     end
-        // end
+                        literal_src_mask <= {2*UNIT_PER_LINE*7{1'b1}} << src_move_literal;
+                        state_src_mask <= {2*UNIT_PER_LINE*STATEWIDTH{1'b1}} << src_move_state;
+                        literal_dst_mask_1 <= {2*UNIT_PER_LINE*7{1'b1}} << dst_move_literal_1;
+                        literal_dst_mask_2 <= {2*UNIT_PER_LINE*7{1'b1}} >> dst_move_literal_2;
+                        state_dst_mask_1 <= {2*UNIT_PER_LINE*STATEWIDTH{1'b1}} << dst_move_state_1;
+                        state_dst_mask_2 <= {2*UNIT_PER_LINE*STATEWIDTH{1'b1}} >> dst_move_state_2;
+                        append_step <= 3'd2;
+                    end
+                    3'd2: begin
+                        // 
+                        scanning_literals_block <= scanning_literals_block << src_move_literal;
+                        scanning_states_block <= scanning_states_block << src_move_state;
+                        state_dst_mask_1 <= state_dst_mask_1 | state_dst_mask_2;
+                        literal_dst_mask_1 <= literal_dst_mask_1 | literal_dst_mask_2;
+                        append_step <= 3'd3;
+                    end
+                    3'd3: begin
+                        scanning_literals_block <= scanning_literals_block & literal_src_mask;
+                        scanning_states_block <= scanning_states_block & state_src_mask;
+                        scanning_cache_states <= scanning_cache_states & state_dst_mask_1;
+                        scanning_cache_literals <= scanning_cache_literals & literal_dst_mask_1;
+                        append_step <= 3'd4;
+                    end 
+                    3'd4: begin
+                        src_move_literal <= (2*UNIT_PER_LINE - length_from_scanning - scanning_cache_index % (2*UNIT_PER_LINE)) * 7;
+                        src_move_state <= (2*UNIT_PER_LINE - length_from_scanning - scanning_cache_index % (2*UNIT_PER_LINE)) * STATEWIDTH;
+                        append_step <= 3'd5;
+                    end
+                    3'd5: begin
+                        scanning_literals_block <= scanning_literals_block >> src_move_literal;
+                        scanning_states_block <= scanning_states_block >> src_move_state;
+                        append_step <= 3'd6;
+                    end
+                    3'd6: begin
+                        scanning_cache_literals <= scanning_cache_literals | scanning_literals_block;
+                        scanning_cache_states <= scanning_cache_states | scanning_states_block;
+                        scanning_cache_index <= scanning_cache_index + length_from_scanning;
+                        pre_scanning_cache_index <= scanning_cache_index;
+                        append_step <= 3'd7;
+                    end
+                    3'd7: begin
+                        if(pre_scanning_cache_index / UNIT_PER_LINE != scanning_cache_index / UNIT_PER_LINE) begin
+                            if(pre_scanning_cache_index[4] == 0) begin
+                                scanning_enable_bram0 <= 1'b1;
+                                scanning_write_bram0 <= 1'b1;
+                                if(pre_scanning_cache_index % (2*UNIT_PER_LINE) <= 15) begin
+                                    scanning_literals_to_bram0 <= scanning_cache_literals[UNIT_PER_LINE*7-1:0];
+                                    scanning_states_to_bram0 <= scanning_cache_states[UNIT_PER_LINE*STATEWIDTH-1:0];   
+                                end
+                                else begin
+                                    scanning_literals_to_bram0 <= scanning_cache_literals[2*UNIT_PER_LINE*7-1:UNIT_PER_LINE*7];
+                                    scanning_states_to_bram0 <= scanning_cache_states[2*UNIT_PER_LINE*STATEWIDTH-1:UNIT_PER_LINE*STATEWIDTH];
+                                end
+                            end
+                            else begin
+                                scanning_enable_bram1 <= 1'b1;
+                                scanning_write_bram1 <= 1'b1;
+                                if(pre_scanning_cache_index % (2*UNIT_PER_LINE) <= UNIT_PER_LINE) begin
+                                    scanning_literals_to_bram1 <= scanning_cache_literals[UNIT_PER_LINE*7-1:0];
+                                    scanning_states_to_bram1 <= scanning_cache_states[UNIT_PER_LINE*STATEWIDTH-1:0];   
+                                end
+                                else begin
+                                    scanning_literals_to_bram1 <= scanning_cache_literals[2*UNIT_PER_LINE*7-1:UNIT_PER_LINE*7];
+                                    scanning_states_to_bram1 <= scanning_cache_states[2*UNIT_PER_LINE*STATEWIDTH-1:UNIT_PER_LINE*STATEWIDTH];                            
+                                end
+                            end
+                        end
+                        append_step <= 3'd0;
+                    end
+                    default: begin
+                        append_step <= 3'd0;
+                    end
+                endcase
+            end
+        end
         if(enable_from_verification) begin
             // handle verification module's request
             case(opcode_from_verification)
@@ -367,12 +479,17 @@ always@(posedge sys_clk or negedge sys_rst_n) begin
                             verification_write_bram0 <= 1'b0;
                             verification_write_bram1 <= 1'b0;
                             if(addr_from_verification[4] == 0) begin
+                                // 这行代码将验证模块传来的地址的高位部分(BRAM地址)赋值给verification_addr0
+                                // 使用位选择语法[ADDR_WIDTH-1 -: BRAM_ADDR_WIDTH]从高位开始选取BRAM_ADDR_WIDTH位
+                                // 例如：当ADDR_WIDTH=10, BRAM_ADDR_WIDTH=5时
+                                // [9 -: 5]表示从第9位开始，向下选择5位，即选择了[9:5]
+                                // 这种语法的优点是当参数变化时，不需要手动计算位范围
                                 verification_addr0 <= addr_from_verification[ADDR_WIDTH-1 -: BRAM_ADDR_WIDTH];
                                 verification_addr1 <= addr_from_verification[ADDR_WIDTH-1 -: BRAM_ADDR_WIDTH];
                             end
                             else begin
                                 verification_addr0 <= addr_from_verification[ADDR_WIDTH-1 -: BRAM_ADDR_WIDTH] + 1;
-                                verification_addr1 <= addr_from_verification[ADDR_WIDTH-1 - : BRAM_ADDR_WIDTH];
+                                verification_addr1 <= addr_from_verification[ADDR_WIDTH-1 -: BRAM_ADDR_WIDTH];
                             end
                             verification_read_step <= 1'b1;
                         end
@@ -447,6 +564,9 @@ always@(posedge sys_clk or negedge sys_rst_n) begin
                                 end
                             end
                         end
+                        default: begin
+                            verification_read_step <= 1'b0;
+                        end
                     endcase
                 end
                 2'd1: begin
@@ -492,6 +612,9 @@ always@(posedge sys_clk or negedge sys_rst_n) begin
                                 end
                                 verification_write_single_step <= 1'b0;
                             end
+                            default: begin
+                                verification_write_single_step <= 1'b0;
+                            end
                         endcase
                     end
                 end
@@ -522,8 +645,53 @@ always@(posedge sys_clk or negedge sys_rst_n) begin
                         end
                     end
                 end 
+                default: begin
+                    // No action needed for undefined opcodes
+                end 
             endcase
         end
     end
 end
+endmodule
+
+// Dual-port Block RAM module
+module bram_dual_port #(
+    parameter DATA_WIDTH = 112,  // Default for literals (16*7)
+    parameter ADDR_WIDTH = 5     // Default for 32 depth
+)
+(
+    input wire clk,
+    input wire en_a,
+    input wire en_b,
+    input wire we_a,
+    input wire we_b,
+    input wire [ADDR_WIDTH-1:0] addr_a,
+    input wire [ADDR_WIDTH-1:0] addr_b,
+    input wire [DATA_WIDTH-1:0] din_a,
+    input wire [DATA_WIDTH-1:0] din_b,
+    output reg [DATA_WIDTH-1:0] dout_a,
+    output reg [DATA_WIDTH-1:0] dout_b
+);
+
+    // Memory declaration
+    reg [DATA_WIDTH-1:0] mem [(1<<ADDR_WIDTH)-1:0];
+
+    // Port A
+    always @(posedge clk) begin
+        if (en_a) begin
+            if (we_a)
+                mem[addr_a] <= din_a;
+            dout_a <= mem[addr_a];
+        end
+    end
+
+    // Port B
+    always @(posedge clk) begin
+        if (en_b) begin
+            if (we_b)
+                mem[addr_b] <= din_b;
+            dout_b <= mem[addr_b];
+        end
+    end
+
 endmodule
